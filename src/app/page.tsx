@@ -44,16 +44,11 @@ export default function Home() {
   // Custom travel profile
   const [activeProfile, setActiveProfile] = useState("all");
 
-  // Itinerary planner state
-  const [itinerary, setItinerary] = useState<ItineraryItem[]>([]);
-
   // Storyteller modal trigger
   const [storytellerSpot, setStorytellerSpot] = useState<string | null>(null);
 
-  // Parse shareable links from URL on mount
-  useEffect(() => {
-
-    // Load shared itinerary from URL if present
+  // Itinerary planner state with lazy initialization from URL parameters
+  const [itinerary, setItinerary] = useState<ItineraryItem[]>(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const sharedItems: ItineraryItem[] = [];
@@ -74,12 +69,12 @@ export default function Home() {
         }
         idx++;
       }
-
       if (sharedItems.length > 0) {
-        setItinerary(sharedItems);
+        return sharedItems;
       }
     }
-  }, []);
+    return [];
+  });
 
   const fetchDestination = async (destinationName: string) => {
     setLoading(true);
@@ -101,8 +96,9 @@ export default function Home() {
       
       setExploreData(resData.data);
       setQuery(resData.data.location); // Set input to resolved location
-    } catch (err: any) {
-      setError(err?.message || "Something went wrong loading recommendations.");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Something went wrong loading recommendations.";
+      setError(errMsg);
     } finally {
       setLoading(false);
     }
@@ -220,7 +216,7 @@ export default function Home() {
           </div>
           
           <h1 className="text-3xl sm:text-5xl font-black font-serif text-sand-900 tracking-tight leading-tight">
-            Discover the World's <span className="text-primary-500">Living Heritage</span>
+            Discover the World&apos;s <span className="text-primary-500">Living Heritage</span>
           </h1>
           <p className="text-sm sm:text-base text-sand-600 max-w-lg mx-auto">
             Search any city to uncover hidden architectural wonders, taste ancestral culinary secrets, and connect directly with local guides.
