@@ -147,10 +147,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ data, isSimulated: true, error: "AI query failed. Using local fallback engine." });
     }
 
-  } catch (err: any) {
+  } catch (err) {
     console.error("Internal Route Error:", err);
+    const details = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
-      { error: "Internal Server Error", details: err?.message || err },
+      { error: "Internal Server Error", details },
       { status: 500 }
     );
   }
