@@ -31,10 +31,12 @@ export default function ItineraryBuilder({
   const [customType, setCustomType] = useState("Heritage");
   const [showAddForm, setShowAddForm] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [tripDays, setTripDays] = useState(3);
 
   // Group items by day
   const maxDay = items.reduce((acc, curr) => Math.max(acc, curr.day), 1);
-  const days = Array.from({ length: Math.max(maxDay, 3) }, (_, i) => i + 1);
+  const totalDays = Math.max(tripDays, maxDay);
+  const days = Array.from({ length: totalDays }, (_, i) => i + 1);
 
   const handleShare = () => {
     if (typeof window === "undefined") return;
@@ -79,6 +81,35 @@ export default function ItineraryBuilder({
           <p className="text-sand-600 text-xs mt-1 leading-relaxed">
             Build your travel timeline. Add details, reorganize days, and share your path.
           </p>
+
+          {/* Trip Duration Selector */}
+          <div className="flex items-center justify-between bg-sand-50 p-2.5 rounded-xl border border-sand-200/60 print:hidden mt-3.5">
+            <span className="text-xs font-bold text-sand-700 uppercase tracking-wider flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-primary-500" />
+              Trip Duration
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setTripDays(prev => Math.max(1, prev - 1))}
+                disabled={totalDays <= 1}
+                className="w-7 h-7 rounded-lg border border-sand-300 bg-white hover:bg-sand-50 disabled:opacity-30 disabled:hover:bg-white flex items-center justify-center text-sm font-bold text-sand-800 transition-colors cursor-pointer"
+                aria-label="Decrease days"
+              >
+                -
+              </button>
+              <span className="w-14 text-center text-xs font-bold text-sand-900">{totalDays} {totalDays === 1 ? "Day" : "Days"}</span>
+              <button
+                type="button"
+                onClick={() => setTripDays(prev => Math.min(14, prev + 1))}
+                disabled={totalDays >= 14}
+                className="w-7 h-7 rounded-lg border border-sand-300 bg-white hover:bg-sand-50 disabled:opacity-30 disabled:hover:bg-white flex items-center justify-center text-sm font-bold text-sand-800 transition-colors cursor-pointer"
+                aria-label="Increase days"
+              >
+                +
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-2 w-full">
